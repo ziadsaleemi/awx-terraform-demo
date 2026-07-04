@@ -7,6 +7,16 @@ terraform {
       version = "~> 2.9"
     }
   }
+
+  # Shared backend keeps state outside AWX's per-job working directory.
+  # Authenticate with ARM_* env vars from an AWX Azure RM (Terraform) credential.
+  backend "azurerm" {
+    resource_group_name  = "rg-ziad-3557_ai"
+    storage_account_name = "awxtfstate3557c3c"
+    container_name       = "tfstate"
+    key                  = "awx/terraform_demo/vmware-vsphere-vm.tfstate"
+    use_azuread_auth     = true
+  }
 }
 
 provider "vsphere" {

@@ -26,7 +26,16 @@ The modules expose outputs named `host_ip_*`. AWX uses those outputs to register
 
 ## State
 
-These examples intentionally do not define a remote backend. For production, configure a backend that matches your environment before repeated apply/destroy runs.
+The `vmware-vsphere-vm` example uses Azure Blob Storage remote state so AWX apply and destroy jobs share the same Terraform state across ephemeral job workspaces:
+
+- Resource group: `rg-ziad-3557_ai`
+- Storage account: `awxtfstate3557c3c`
+- Container: `tfstate`
+- Key: `awx/terraform_demo/vmware-vsphere-vm.tfstate`
+
+Attach an AWX Azure RM (Terraform) credential to the vSphere Terraform templates so the backend receives `ARM_*` environment variables during `terraform init`.
+
+Other examples may still use local state until their backend blocks are configured.
 
 ## Safety
 
