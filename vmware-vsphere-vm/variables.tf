@@ -107,3 +107,27 @@ variable "vsphere_allow_unverified_ssl" {
   type        = bool
   default     = true
 }
+
+variable "enable_cloud_init" {
+  description = "Inject VMware guestinfo cloud-init data for AWX SSH bootstrap."
+  type        = bool
+  default     = true
+}
+
+variable "ssh_username" {
+  description = "Guest user created by cloud-init for AWX configuration jobs."
+  type        = string
+  default     = "ansible"
+}
+
+variable "ssh_public_key" {
+  description = "SSH public key authorized for ssh_username. Leave empty to skip guestinfo cloud-init bootstrap."
+  type        = string
+  default     = ""
+}
+
+variable "extra_config" {
+  description = "Additional vSphere VMX extra_config values to merge with AWX cloud-init bootstrap settings."
+  type        = map(string)
+  default     = {}
+}

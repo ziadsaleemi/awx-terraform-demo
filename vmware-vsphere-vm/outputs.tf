@@ -17,3 +17,8 @@ output "host_ip_vmware_vm" {
   description = "Routable IP registered in AWX inventory."
   value       = vsphere_virtual_machine.vm.default_ip_address != "" ? vsphere_virtual_machine.vm.default_ip_address : var.ip_address
 }
+
+output "ansible_user" {
+  description = "Guest user intended for AWX configuration jobs."
+  value       = var.ssh_username
+}

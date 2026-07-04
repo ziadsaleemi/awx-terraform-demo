@@ -50,6 +50,38 @@ data "vsphere_virtual_machine" "template" {
   datacenter_id = data.vsphere_datacenter.dc.id
 }
 
+locals {
+  ssh_public_key     = trimspace(var.ssh_public_key)
+  cloud_init_enabled = var.enable_cloud_init && local.ssh_public_key != ""
+  cloud_init_userdata = local.cloud_init_enabled ? "#cloud-config\n${yamlencode({
+    users = [
+      {
+        name                = var.ssh_username
+        groups              = "wheel"
+        shell               = "/bin/bash"
+        sudo                = "ALL=(ALL) NOPASSWD:ALL"
+        lock_passwd         = true
+        ssh_authorized_keys = [local.ssh_public_key]
+      }
+    ]
+    ssh_pwauth = false
+    runcmd = [
+      "mkdir -p /tmp/ansible",
+      "chmod 1777 /tmp/ansible",
+    ]
+  })}" : null
+  cloud_init_metadata = local.cloud_init_enabled ? yamlencode({
+    "instance-id"    = var.vm_name
+    "local-hostname" = var.vm_name
+  }) : null
+  cloud_init_extra_config = local.cloud_init_enabled ? {
+    "guestinfo.userdata"          = base64encode(local.cloud_init_userdata)
+    "guestinfo.userdata.encoding" = "base64"
+    "guestinfo.metadata"          = base64encode(local.cloud_init_metadata)
+    "guestinfo.metadata.encoding" = "base64"
+  } : {}
+}
+
 resource "vsphere_virtual_machine" "vm" {
   name             = var.vm_name
   resource_pool_id = data.vsphere_compute_cluster.cluster.resource_pool_id
@@ -91,4 +123,6 @@ resource "vsphere_virtual_machine" "vm" {
       dns_server_list = var.dns_servers
     }
   }
+
+  extra_config = merge(local.cloud_init_extra_config, var.extra_config)
 }
