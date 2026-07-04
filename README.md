@@ -37,6 +37,8 @@ Attach an AWX Azure RM (Terraform) credential to the vSphere Terraform templates
 
 The `vmware-vsphere-vm` example can also inject VMware guestinfo cloud-init data for the follow-up Apache configuration workflow. Set `ssh_public_key` from the AWX machine credential used by the Apache job. The module creates the `ssh_username` user, grants passwordless sudo, installs the SSH key, and prepares `/tmp/ansible` for AWX remote temporary files. Leave `ssh_public_key` empty only when the source VM template already contains working SSH access.
 
+For the AWX Apache catalog item, `enable_vsphere_customization` defaults to `false` so DHCP/cloud-init deployments do not depend on vCenter guest customization. Set it to `true` only when the template and vCenter guest customization path are known to work, such as for static IP deployments.
+
 Other examples may still use local state until their backend blocks are configured.
 
 ## Safety

@@ -108,6 +108,12 @@ variable "vsphere_allow_unverified_ssl" {
   default     = true
 }
 
+variable "enable_vsphere_customization" {
+  description = "Use vSphere guest customization during clone. Keep disabled for cloud-init guestinfo/DHCP catalog deployments."
+  type        = bool
+  default     = false
+}
+
 variable "enable_cloud_init" {
   description = "Inject VMware guestinfo cloud-init data for AWX SSH bootstrap."
   type        = bool

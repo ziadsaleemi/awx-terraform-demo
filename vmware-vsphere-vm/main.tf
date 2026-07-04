@@ -108,19 +108,23 @@ resource "vsphere_virtual_machine" "vm" {
   clone {
     template_uuid = data.vsphere_virtual_machine.template.id
 
-    customize {
-      linux_options {
-        host_name = var.vm_name
-        domain    = var.domain
-      }
+    dynamic "customize" {
+      for_each = var.enable_vsphere_customization ? [1] : []
 
-      network_interface {
-        ipv4_address = var.ip_address != "" ? var.ip_address : null
-        ipv4_netmask = var.ip_address != "" ? var.ip_netmask : null
-      }
+      content {
+        linux_options {
+          host_name = var.vm_name
+          domain    = var.domain
+        }
 
-      ipv4_gateway    = var.ip_address != "" ? var.gateway : null
-      dns_server_list = var.dns_servers
+        network_interface {
+          ipv4_address = var.ip_address != "" ? var.ip_address : null
+          ipv4_netmask = var.ip_address != "" ? var.ip_netmask : null
+        }
+
+        ipv4_gateway    = var.ip_address != "" ? var.gateway : null
+        dns_server_list = var.dns_servers
+      }
     }
   }
 
